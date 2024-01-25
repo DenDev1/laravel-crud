@@ -18,34 +18,29 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::get('/', [LoginController::class ,'index'])->name('login.index');
+Route::get('/', [LoginController::class, 'index'])->name('login.index');
 
-Route::get('/login', [LoginController::class, 'login.index'])->name('login.index');
-
-Route::get('/register', [RegisterController::class ,'create'])->name('contact.create');
-
-
-
+// Routes that don't require authentication
+Route::get('/login', [LoginController::class, 'index'])->name('login.index');
+Route::get('/register', [RegisterController::class, 'create'])->name('contact.create');
+Route::post('/register', [RegisterController::class, 'store'])->name('register');
 
 
 
-Route::post('/register', [RegisterController::class ,'store'])->name('register'); 
+// Routes that require authentication
+Route::middleware(['auth'])->group(function () {
+    Route::get('/login/todolist', [TodoListController::class, 'index'])->name('login.todolist');
+    Route::post('/save-task', [TodoListController::class, 'saveTask'])->name('save');
+    Route::get('/delete-task/{id}', [TodolistController::class, 'deleteTask'])->name('deleteTask');
+    Route::get('/update-task/{id}', [TodolistController::class, 'updateTask'])->name('updateTask');
+    Route::post('/save-update-task', [TodolistController::class, 'saveUpdateTask'])->name('saveUpdateTask');
+});
 
 
-Route::post('/login', [LoginController::class ,'todolist'])->name('todolist');
-
-Route::get('thanks',[RegisterController::class]);
-
+// Login and logout routes
+Route::post('/login', [LoginController::class, 'todolist'])->name('todolist');
 
 
 
-Route::get('/login', [TodoListController::class, 'index'])->name('login.todolist');
-
-Route::post('/save-task', [TodoListController::class, 'saveTask'])->name('save');
-
-Route::get('/delete-task/{id}' ,[TodolistController::class,'deleteTask'])->name('deleteTask');
-
-Route::get('/update-task/{id}' ,[TodolistController::class,'updateTask'])->name('updateTask');
-
-Route::post('/save-update-task',[TodolistController::class,'saveUpdateTask'])->name('saveUpdateTask');
-
+// Thanks route (not clear how this is intended to be used)
+Route::get('/thanks', [RegisterController::class, 'thanks']);
